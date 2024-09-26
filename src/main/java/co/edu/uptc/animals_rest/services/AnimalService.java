@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import co.edu.uptc.animals_rest.exception.InvalidRangeException;
 import co.edu.uptc.animals_rest.models.Animal;
+import co.edu.uptc.animals_rest.models.CategoryCount;
 
 import java.util.ArrayList;
 
@@ -58,6 +61,20 @@ public class AnimalService {
         }
     
         return animales;
+    }
+
+        // New Method
+    public List<CategoryCount> getNumberByCategory() throws IOException {
+        List<Animal> animals = getAnimalAll();
+        Map<String, Long> categoryCountMap = animals.stream()
+                .collect(Collectors.groupingBy(Animal::getCategory, Collectors.counting()));
+
+        List<CategoryCount> result = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : categoryCountMap.entrySet()) {
+            result.add(new CategoryCount(entry.getKey(), entry.getValue().intValue()));
+        }
+
+        return result;
     }
 }
 

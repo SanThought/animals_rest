@@ -6,6 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+// Import the new DTO
+import co.edu.uptc.animals_rest.models.CategoryCount;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,6 +39,12 @@ public class AnimalController {
     public List<Animal> getAnimal(@RequestParam int from, @RequestParam int to) throws IOException {
         logger.info("getAnimal called with parameters: from = {}, to = {}", from, to);
         return animalService.getAnimalInRange(from, to);
+    }
+
+    @GetMapping("/numberByCategory")
+    public List<CategoryCount> getNumberByCategory() throws IOException {
+        logger.info("getNumberByCategory called");
+        return animalService.getNumberByCategory();
     }
 
 
