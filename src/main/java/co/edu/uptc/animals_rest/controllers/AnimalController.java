@@ -41,10 +41,23 @@ public class AnimalController {
         return animalService.getAnimalInRange(from, to);
     }
 
-    @GetMapping("/numberByCategory")
+    @GetMapping("/animal/numberByCategory")
     public List<CategoryCount> getNumberByCategory() throws IOException {
-        logger.info("getNumberByCategory called");
-        return animalService.getNumberByCategory();
+        ClassPathResource resource = new ClassPathResource("animals.json");
+
+        InputStream inputStream = resource.getInputStream();
+     
+        ObjectMapper mapper = new ObjectMapper();
+        List<Animal> animals = Arrays.asList(mapper.readValue(inputStream, Animal[].class));
+
+        Map<String, Long> categoryCountMap = animals.stream()
+            .collect(Collectors.groupingBy(Animal::getCategory, Collectors.counting()));
+
+        List<CategoryCount> result = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : categoryCountMap.entrySet()) {
+            result.add(new CategoryCount(entry.getKey(), entry.getValue().intValue()));
+        }
+        return result;
     }
 
 }
