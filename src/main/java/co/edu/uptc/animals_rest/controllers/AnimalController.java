@@ -47,5 +47,4 @@ public class AnimalController {
         return animalService.getNumberByCategory();
     }
 
-
 }
