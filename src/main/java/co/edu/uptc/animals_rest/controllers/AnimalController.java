@@ -45,19 +45,21 @@ public class AnimalController {
     public List<CategoryCount> getNumberByCategory() throws IOException {
         ClassPathResource resource = new ClassPathResource("animals.json");
 
-        InputStream inputStream = resource.getInputStream();
-     
-        ObjectMapper mapper = new ObjectMapper();
-        List<Animal> animals = Arrays.asList(mapper.readValue(inputStream, Animal[].class));
+        try (InputStream inputStream = resource.getInputStream()) {
+            ObjectMapper mapper = new ObjectMapper();
+            List<Animal> animals = Arrays.asList(mapper.readValue(inputStream, Animal[].class));
 
-        Map<String, Long> categoryCountMap = animals.stream()
-            .collect(Collectors.groupingBy(Animal::getCategory, Collectors.counting()));
+            Map<String, Long> categoryCountMap = animals.stream()
+                .collect(Collectors.groupingBy(Animal::getCategory, Collectors.counting()));
 
-        List<CategoryCount> result = new ArrayList<>();
-        for (Map.Entry<String, Long> entry : categoryCountMap.entrySet()) {
-            result.add(new CategoryCount(entry.getKey(), entry.getValue().intValue()));
+            return categoryCountMap.entrySet().stream()
+                .map(entry -> new CategoryCount(entry.getKey(), entry.getValue().intValue()))
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            // Log the error and rethrow it to return a proper response
+            System.err.println("Error reading animals data: " + e.getMessage());
+            throw e;  // This will cause a 500 error and return the message
         }
-        return result;
     }
 
 }
